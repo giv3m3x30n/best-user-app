@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лучший юзер</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--tg-theme-bg-color, #1c1c1e);
+            color: var(--tg-theme-text-color, #ffffff);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* Экран загрузки */
+        #loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .scanner {
+            width: 200px;
+            height: 200px;
+            border: 2px solid var(--tg-theme-button-color, #3390ec);
+            border-radius: 50%;
+            position: relative;
+            animation: pulse 1.5s infinite;
+        }
+        .scanner::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, var(--tg-theme-button-color, #3390ec) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            opacity: 0.5;
+            animation: scan 2s infinite linear;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes scan {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Экран результата */
+        #result {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .avatar {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+        p {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+        .username {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--tg-theme-button-color, #3390ec);
+            margin: 15px 0;
+            display: block;
+            text-decoration: none;
+            border: 2px solid var(--tg-theme-button-color, #3390ec);
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .username:active {
+            transform: scale(0.95);
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: white;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Конфетти */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="scanner"></div>
+        <h2 style="margin-top: 20px;">Анализ базы данных...</h2>
+        <p id="status" style="font-size: 14px; color: #888;">Проверка чатов...</p>
+    </div>
+
+    <div id="result">
+        <div class="avatar">👑</div>
+        <h1>НАЙДЕН ЛУЧШИЙ!</h1>
+        <p>По официальной версии всех нас.</p>
+        
+        <a href="https://t.me/gggggrigoriev" class="username">
+            @gggggrigoriev
+        </a>
+        
+        <p style="font-size: 12px; margin-top: 20px;">100% точность • 0% сомнений</p>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Растянуть на весь экран
+
+        // Имитация бурной деятельности
+        const statusText = document.getElementById('status');
+        const loader = document.getElementById('loader');
+        const result = document.getElementById('result');
+
+        const messages = [
+            "Сканирование кармы...",
+            "Анализ уровня крутости...",
+            "Отсев скучных людей...",
+            "Почти готово..."
+        ];
+
+        let step = 0;
+
+        const interval = setInterval(() => {
+            if (step < messages.length) {
+                statusText.innerText = messages[step];
+                step++;
+            } else {
+                clearInterval(interval);
+                showResult();
+            }
+        }, 800);
+
+        function showResult() {
+            loader.style.display = 'none';
+            result.style.display = 'flex';
+            tg.HapticFeedback.notificationOccurred('success'); // Вибрация успеха
+            createConfetti();
+        }
+
+        // Функция для салюта
+        function createConfetti() {
+            const colors = ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'];
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = -10 + 'px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(conf);
+            }
+        }
+    </script>
+</body>
+</html>
