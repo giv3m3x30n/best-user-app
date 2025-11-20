@@ -134,8 +134,8 @@
         <h1>НАЙДЕН ЛУЧШИЙ!</h1>
         <p>По официальной версии всех нас.</p>
         
-        <a href="https://t.me/gggggrigoriev" class="username">
-            @gggggrigoriev
+        <a href="#" class="username" id="winner-link">
+            @загрузка...
         </a>
         
         <p style="font-size: 12px; margin-top: 20px;">100% точность • 0% сомнений</p>
@@ -143,12 +143,28 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Растянуть на весь экран
+        tg.expand(); 
 
-        // Имитация бурной деятельности
         const statusText = document.getElementById('status');
         const loader = document.getElementById('loader');
         const result = document.getElementById('result');
+        const winnerLink = document.getElementById('winner-link'); // Получаем элемент ссылки
+
+        // --- ЛОГИКА ОПРЕДЕЛЕНИЯ ПОБЕДИТЕЛЯ ---
+        function determineWinner() {
+            // Значение по умолчанию (если никнейма нет или открыто не в TG)
+            let finalUsername = 'gggggrigoriev';
+            
+            // Проверяем, есть ли данные пользователя и есть ли у него username
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.username) {
+                finalUsername = tg.initDataUnsafe.user.username;
+            }
+
+            // Обновляем ссылку и текст
+            winnerLink.href = `https://t.me/${finalUsername}`;
+            winnerLink.innerText = `@${finalUsername}`;
+        }
+        // --------------------------------------
 
         const messages = [
             "Сканирование кармы...",
@@ -170,13 +186,14 @@
         }, 800);
 
         function showResult() {
+            determineWinner(); // Сначала определяем имя!
+            
             loader.style.display = 'none';
             result.style.display = 'flex';
-            tg.HapticFeedback.notificationOccurred('success'); // Вибрация успеха
+            tg.HapticFeedback.notificationOccurred('success');
             createConfetti();
         }
 
-        // Функция для салюта
         function createConfetti() {
             const colors = ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'];
             for (let i = 0; i < 50; i++) {
@@ -191,5 +208,4 @@
         }
     </script>
 </body>
-
 </html>
